@@ -115,6 +115,10 @@ filesets:
     files:
     - emulation/xilinx/ips/xilinx_clk_mngr.tcl
     file_type: tclSource
+  arty-ips:
+    files:
+    - emulation/xilinx/ips/xilinx_clk_mngr.tcl
+    file_type: tclSource
   genesys2-ips:
     files:
     - emulation/core-v-mcu-genesys2/ips/xilinx_clk_mngr.tcl
@@ -162,9 +166,18 @@ filesets:
     - emulation/core-v-mcu-nexys/rtl/core_v_mcu_nexys.v
     - emulation/xilinx/rtl/fpga_clk_gen.sv
     file_type: systemVerilogSource
+  arty-rtl:
+    files:
+    - emulation/core-v-mcu-arty/rtl/core_v_mcu_arty.v
+    - emulation/xilinx/rtl/fpga_clk_gen.sv
+    file_type: systemVerilogSource
   nexys-xdc:
     files:
     - emulation/core-v-mcu-nexys/constraints/core-v-mcu-pin-assignment.xdc
+    file_type: xdc
+  arty-xdc:
+    files:
+    - emulation/core-v-mcu-arty/constraints/core-v-mcu-pin-assignment.xdc
     file_type: xdc
   xilinx-tcl:
     files:
@@ -319,6 +332,24 @@ targets:
       vivado:
         part: xc7a100tcsg324-1
     toplevel: core_v_mcu_nexys
+  arty-a7-100t:
+    <<: *default_target
+    default_tool: vivado
+    description: Digilent Arty-A7-100T Board
+    parameters:
+    - PULP_FPGA_EMUL=true
+    filesets_append:
+    - arty-ips
+    - xilinx-ips
+    - xilinx-tcl
+    - emulation-rtl
+    - arty-rtl
+    - arty-xdc
+    - rom_init
+    tools:
+      vivado:
+        part: xc7a100tcsg324-1
+    toplevel: core_v_mcu_arty
   genesys2:
     <<: *default_target
     default_tool: vivado

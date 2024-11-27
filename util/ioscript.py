@@ -1179,7 +1179,7 @@ if args.input_xdc != None:
             output_xdc.write("set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets {s_tck}]\n")
             for line in input_xdc:
                 elements = line.split()
-                if len(elements) >= 10 :
+                if len(elements) >= 10 and elements[0] != "##":
                     if elements[10] == "sysclk_p" or elements[10] == "sysclk_n" :
                         elements[0] = elements[0][1:]
                         output_xdc.write(' '.join(elements) + "\n")

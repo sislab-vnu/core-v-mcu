@@ -39,6 +39,15 @@ filesets:
     - emulation/core-v-mcu-nexys/tcl/common.tcl
     - emulation/core-v-mcu-nexys/tcl/flatten.tcl
     file_type: tclSource
+  arty-xdc:
+    files:
+    - emulation/core-v-mcu-arty/constraints/core-v-mcu-pin-assignment.xdc
+    file_type: xdc
+  arty-cfg:
+    files:
+    - emulation/core-v-mcu-arty/tcl/common.tcl
+    - emulation/core-v-mcu-arty/tcl/flatten.tcl
+    file_type: tclSource
   xilinx-ips:
     files:
     - emulation/xilinx/ips/xilinx_clk_mngr.tcl
@@ -79,6 +88,19 @@ targets:
     filesets_append:
     - nexys-cfg
     - nexys-xdc
+    tools:
+      vivado:
+        part: xc7a100tcsg324-1
+    toplevel: xilinx_core_v_mcu
+  arty-a7-100t:
+    <<: *default
+    default_tool: vivado
+    description: Digilent Arty-A7-100T Board
+    parameters:
+    - PULP_FPGA_EMUL=true
+    filesets_append:
+    - arty-cfg
+    - arty-xdc
     tools:
       vivado:
         part: xc7a100tcsg324-1

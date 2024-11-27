@@ -85,7 +85,7 @@ lint:
 .PHONY:sim
 sim:
 	ln -f  tb/wave.do build/openhwgroup.org_systems_core-v-mcu_0/sim-modelsim/wave.do
-	(cd build/openhwgroup.org_systems_core-v-mcu_0/sim-modelsim; make run-gui) 2>&1 | tee sim.log
+	(cd build/openhwgroup.org_systems_core-v-mcu_0/sim-modelsim; make run) 2>&1 | tee sim.log
 
 .PHONY:buildsim
 buildsim: pseudo-uart
@@ -154,6 +154,46 @@ nexys-emul:
 					fusesoc --cores-root . run --target=nexys-a7-100t --setup --build openhwgroup.org:systems:core-v-mcu\
 				) 2>&1 | tee lint.log
 				cp ./build/openhwgroup.org_systems_core-v-mcu_0/nexys-a7-100t-vivado/openhwgroup.org_systems_core-v-mcu_0.runs/impl_1/core_v_mcu_nexys.bit emulation/core_v_mcu_nexys.bit
+
+
+
+.PHONEY: nexys-emul
+arty-emul:
+				@echo "*************************************"
+				@echo "*                                   *"
+				@echo "* setting up nexys specific files   *"
+				@echo "*                                   *"
+				@echo "*************************************"
+				mkdir -p emulation/core-v-mcu-arty/rtl
+				python3 util/ioscript.py \
+					--soc-defines rtl/includes/pulp_soc_defines.svh \
+					--peripheral-defines rtl/includes/pulp_peripheral_defines.svh \
+					--periph-bus-defines rtl/includes/periph_bus_defines.svh \
+					--pin-table arty-pin-table.csv \
+					--perdef-json perdef.json \
+					--pad-control rtl/core-v-mcu/top/pad_control.sv \
+					--emulation-toplevel core_v_mcu_arty \
+					--input-xdc emulation/core-v-mcu-arty/constraints/Arty-A7-100-Master.xdc \
+		                        --xilinx-core-v-mcu-sv emulation/core-v-mcu-arty/rtl/core_v_mcu_util.v \
+					--output-xdc emulation/core-v-mcu-arty/constraints/core-v-mcu-pin-assignment.xdc
+				util/format-verible
+				@echo "*************************************"
+				@echo "*                                   *"
+				@echo "* running Vivado                    *"
+				@echo "*                                   *"
+				@echo "*************************************"
+				(\
+					export BOARD=arty-a7-100t;\
+					export BOARD_CLOCK_MHZ=100;\
+					export XILINX_PART=xc7a100tcsg324-1;\
+					export XILINX_BOARD=digilentinc.com:arty-a7-100t:1.1;\
+					export FC_CLK_PERIOD_NS=100;\
+					export PER_CLK_PERIOD_NS=200;\
+					export FPGA_CLK_PERIOD_NS=125;\
+					export SLOW_CLK_PERIOD_NS=4000;\
+					fusesoc --cores-root . run --target=arty-a7-100t --setup --build openhwgroup.org:systems:core-v-mcu\
+				) 2>&1 | tee lint.log
+				cp ./build/openhwgroup.org_systems_core-v-mcu_0/arty-a7-100t-vivado/openhwgroup.org_systems_core-v-mcu_0.runs/impl_1/core_v_mcu_arty.bit emulation/core_v_mcu_arty.bit
 
 
 
